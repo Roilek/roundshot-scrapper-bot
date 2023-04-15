@@ -11,6 +11,8 @@ from telegram.ext import Application, CommandHandler, CallbackContext, InlineQue
 
 import scrapper
 
+bot: telegram.Bot = None
+
 # Load the environment variables
 
 load_dotenv()
@@ -46,7 +48,7 @@ async def send_photo_to_channel(update: Update = None, context: CallbackContext 
         image_stream.save(bio, 'JPEG')
         bio.seek(0)
         timestamp_str = datetime.datetime.now().strftime("%Y-%m-%d %Hh%M")
-        await telegram.Bot(TOKEN).send_document(chat_id="@agora_epfl", document=bio, filename=timestamp_str + ".jpg")
+        await bot.send_document(chat_id="@agora_epfl", document=bio, filename=timestamp_str + ".jpg")
     return
 
 
@@ -56,6 +58,8 @@ def main() -> None:
 
     # Create application
     application = Application.builder().token(TOKEN).build()
+    global bot
+    bot = application.bot
 
     # on different commands - answer in Telegram
     application.add_handler(CommandHandler("start", start))
