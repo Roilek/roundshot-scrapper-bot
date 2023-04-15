@@ -3,6 +3,7 @@ import io
 import os
 import uuid
 
+import telegram
 from dotenv import load_dotenv
 from telegram import Update, InlineQueryResultCachedSticker
 from telegram.constants import ParseMode
@@ -37,7 +38,7 @@ async def dump(update: Update, context: CallbackContext) -> None:
     return
 
 
-async def send_photo_to_channel(update: Update, context: CallbackContext) -> None:
+async def send_photo_to_channel(update: Update = None, context: CallbackContext = None) -> None:
     """Send the message to the channel."""
     image_stream = scrapper.get_image_stream("https://epflplace.roundshot.com")
     if image_stream:
@@ -45,7 +46,7 @@ async def send_photo_to_channel(update: Update, context: CallbackContext) -> Non
         image_stream.save(bio, 'JPEG')
         bio.seek(0)
         timestamp_str = datetime.datetime.now().strftime("%Y-%m-%d %Hh%M")
-        await context.bot.send_document(chat_id="@agora_epfl", document=bio, filename=timestamp_str + ".jpg")
+        await telegram.Bot(TOKEN).send_document(chat_id="@agora_epfl", document=bio, filename=timestamp_str + ".jpg")
     return
 
 
