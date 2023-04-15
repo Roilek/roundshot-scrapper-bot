@@ -6,6 +6,8 @@ from telegram import Update, InlineQueryResultCachedSticker
 from telegram.constants import ParseMode
 from telegram.ext import Application, CommandHandler, CallbackContext, InlineQueryHandler
 
+import scrapper
+
 # Load the environment variables
 
 load_dotenv()
@@ -33,6 +35,21 @@ async def dump(update: Update, context: CallbackContext) -> None:
     return
 
 
+async def send_to_channel(update: Update, context: CallbackContext) -> None:
+    """Send the message to the channel."""
+    message = update.message
+    if message is not None:
+        await context.bot.send_message(chat_id="@agora_epfl", text=message.text)  # TODO change channel to variable in db
+    return
+
+
+async def send_photo_to_channel(update: Update, context: CallbackContext) -> None:
+    """Send the message to the channel."""
+    message = update.message
+    if message is not None:
+        await context.bot.send_photo(chat_id="@agora_epfl", photo=scrapper.get_image_stream("https://epflplace.roundshot.com"))  # TODO change channel to variable in db # TODO change url to variable in db
+    return
+
 def main() -> None:
     """Start the bot."""
     print("Going live!")
@@ -44,6 +61,8 @@ def main() -> None:
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
     application.add_handler(CommandHandler("dump", dump))
+    application.add_handler(CommandHandler("send", send_to_channel))
+    application.add_handler(CommandHandler("pic", send_photo_to_channel))
 
     # Start the Bot
     print("Bot starting...")
