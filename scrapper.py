@@ -10,7 +10,7 @@ def get_image_url(url) -> str:
     return image_url
 
 
-def get_image_stream(roundshot_website_url: str) -> bytes:
+def get_image_stream(roundshot_website_url: str) -> Image:
     """Get the image stream from the Roundshot website."""
     url = roundshot_website_url
     image_url = get_image_url(url)
@@ -19,8 +19,7 @@ def get_image_stream(roundshot_website_url: str) -> bytes:
         with open("image.jpg", "wb") as f:
             f.write(response.content)
         img = Image.open("image.jpg")
-        img.show()
-        return response.content
+        return img
     else:
         print("Failed to download image")
         return None

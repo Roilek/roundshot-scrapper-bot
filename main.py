@@ -1,3 +1,4 @@
+import io
 import os
 import uuid
 
@@ -39,16 +40,21 @@ async def send_to_channel(update: Update, context: CallbackContext) -> None:
     """Send the message to the channel."""
     message = update.message
     if message is not None:
-        await context.bot.send_message(chat_id="@agora_epfl", text=message.text)  # TODO change channel to variable in db
+        await context.bot.send_message(chat_id="@agora_epfl",
+                                       text=message.text)  # TODO change channel to variable in db
     return
 
 
 async def send_photo_to_channel(update: Update, context: CallbackContext) -> None:
     """Send the message to the channel."""
-    message = update.message
-    if message is not None:
-        await context.bot.send_photo(chat_id="@agora_epfl", photo=scrapper.get_image_stream("https://epflplace.roundshot.com"))  # TODO change channel to variable in db # TODO change url to variable in db
+    image_stream = scrapper.get_image_stream("https://epflplace.roundshot.com")
+    if image_stream:
+        bio = io.BytesIO()
+        image_stream.save(bio, 'JPEG')
+        bio.seek(0)
+        await context.bot.send_document(chat_id="@agora_epfl", document=bio, filename="EPFLPlace.jpg")
     return
+
 
 def main() -> None:
     """Start the bot."""
