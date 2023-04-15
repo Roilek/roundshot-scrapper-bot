@@ -1,3 +1,4 @@
+import datetime
 import io
 import os
 import uuid
@@ -36,15 +37,6 @@ async def dump(update: Update, context: CallbackContext) -> None:
     return
 
 
-async def send_to_channel(update: Update, context: CallbackContext) -> None:
-    """Send the message to the channel."""
-    message = update.message
-    if message is not None:
-        await context.bot.send_message(chat_id="@agora_epfl",
-                                       text=message.text)  # TODO change channel to variable in db
-    return
-
-
 async def send_photo_to_channel(update: Update, context: CallbackContext) -> None:
     """Send the message to the channel."""
     image_stream = scrapper.get_image_stream("https://epflplace.roundshot.com")
@@ -52,7 +44,8 @@ async def send_photo_to_channel(update: Update, context: CallbackContext) -> Non
         bio = io.BytesIO()
         image_stream.save(bio, 'JPEG')
         bio.seek(0)
-        await context.bot.send_document(chat_id="@agora_epfl", document=bio, filename="EPFLPlace.jpg")
+        timestamp_str = datetime.datetime.now().strftime("%Y-%m-%d %Hh%M")
+        await context.bot.send_document(chat_id="@agora_epfl", document=bio, filename=timestamp_str + ".jpg")
     return
 
 
@@ -67,7 +60,6 @@ def main() -> None:
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
     application.add_handler(CommandHandler("dump", dump))
-    application.add_handler(CommandHandler("send", send_to_channel))
     application.add_handler(CommandHandler("pic", send_photo_to_channel))
 
     # Start the Bot
