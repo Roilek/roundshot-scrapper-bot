@@ -3,7 +3,6 @@ import asyncio
 import datetime
 import io
 import os
-import uuid
 
 import pytz as pytz
 import telegram
@@ -46,7 +45,16 @@ async def dump(update: Update, context: CallbackContext) -> None:
 async def send_photo_to_channel(update: Update = None, context: CallbackContext = None) -> None:
     """Send the message to the channel."""
     # TODO extract constants
-    image_stream = scrapper.get_image_stream("https://epflplace.roundshot.com")
+    # image_stream = scrapper.get_image_stream("https://epflplace.roundshot.com")
+    # if image_stream:
+    #     bio = io.BytesIO()
+    #     image_stream.save(bio, 'JPEG')
+    #     bio.seek(0)
+    #     # Get my timezone
+    #     tz = pytz.timezone('Europe/Zurich')
+    #     timestamp_str = datetime.datetime.now(tz).strftime("%Y-%m-%d %Hh%M")
+    #     await bot.send_document(chat_id="@agora_epfl", document=bio, filename=timestamp_str + ".jpg")
+    image_stream = scrapper.get_cropped_image_stream("https://epflplace.roundshot.com")
     if image_stream:
         bio = io.BytesIO()
         image_stream.save(bio, 'JPEG')
@@ -54,7 +62,7 @@ async def send_photo_to_channel(update: Update = None, context: CallbackContext 
         # Get my timezone
         tz = pytz.timezone('Europe/Zurich')
         timestamp_str = datetime.datetime.now(tz).strftime("%Y-%m-%d %Hh%M")
-        await bot.send_document(chat_id="@agora_epfl", document=bio, filename=timestamp_str + ".jpg")
+        await bot.send_photo(chat_id="@agora_epfl", photo=bio, caption=timestamp_str)
     return
 
 
