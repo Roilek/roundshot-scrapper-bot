@@ -1,3 +1,5 @@
+import argparse
+import asyncio
 import datetime
 import io
 import os
@@ -54,12 +56,25 @@ async def send_photo_to_channel(update: Update = None, context: CallbackContext 
 
 def main() -> None:
     """Start the bot."""
-    print("Going live!")
-
     # Create application
     application = Application.builder().token(TOKEN).build()
     global bot
     bot = application.bot
+
+    # Parse the arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument("function",
+                        nargs='?',
+                        help="The function to execute",
+                        choices=["send_photo_to_channel"])
+    args = parser.parse_args()
+
+    # If a function is specified, execute it and exit
+    if args.function == "send_photo_to_channel":
+        asyncio.run(send_photo_to_channel())
+        return
+
+    print("Going live!")
 
     # on different commands - answer in Telegram
     application.add_handler(CommandHandler("start", start))
